@@ -13,6 +13,8 @@ namespace TheProject
 
 			//Logger.Clear();
 
+			Config.Initialize();
+
 			IconState = new IconState();
 			Visible = false;
 			TopMost = true;
@@ -32,7 +34,7 @@ namespace TheProject
 			DateTime now = DateTime.Now;
 			TimeSpan lastInput = Win32.GetLastInputTime();
 
-			if (lastInput.TotalSeconds > ConfigHelper.BigBreakLength)
+			if (lastInput.TotalSeconds > Config.Instance.BigBreakLengthInSeconds)
 			{
 				_LastMiniBreak = now;
 				_LastBigBreak = _LastMiniBreak;
@@ -41,7 +43,7 @@ namespace TheProject
 				return;
 			}
 
-			if (lastInput.TotalSeconds > ConfigHelper.MiniBreakLength)
+			if (lastInput.TotalSeconds > Config.Instance.MiniBreakLengthInSeconds)
 			{
 				_LastMiniBreak = now;
 				IconState = new IconState { BigBreakProgress = IconState.BigBreakProgress };
@@ -56,13 +58,13 @@ namespace TheProject
 
 			IconState = new IconState
 			{
-				MiniBreakProgress = (int)(miniBreakElapsedSeconds / ((double)ConfigHelper.MiniBreakInterval / ICON_DIMENSIONS)),
-				BigBreakProgress = (int)(bigBreakElapsedSeconds / ((double)ConfigHelper.BigBreakInterval / ICON_DIMENSIONS)),
+				MiniBreakProgress = (int)(miniBreakElapsedSeconds / ((double)Config.Instance.MiniBreakIntervalInMinutes * 60 / ICON_DIMENSIONS)),
+				BigBreakProgress = (int)(bigBreakElapsedSeconds / ((double)Config.Instance.BigBreakIntervalInMinutes * 60 / ICON_DIMENSIONS)),
 				Paused = _Paused
 			};
 
 			if (!wasVisible &&
-				miniBreakElapsedSeconds > ConfigHelper.MiniBreakInterval &&
+				miniBreakElapsedSeconds > Config.Instance.MiniBreakIntervalInMinutes * 60 &&
 				lastInput.TotalSeconds < 2)
 				Notify();
 		}
