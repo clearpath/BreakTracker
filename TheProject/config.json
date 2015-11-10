@@ -1,0 +1,6 @@
+﻿{
+	"miniBreakIntervalInMinutes": 5,
+	"miniBreakLengthInSeconds": 30,
+	"bigBreakIntervalInMinutes": 45,
+	"bigBreakLengthInSeconds": 240
+}
