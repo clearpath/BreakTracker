@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -11,6 +12,12 @@ namespace TheProject
 		{
 			InitializeComponent();
 
+			var contextMenu = new ContextMenuStrip();
+			contextMenu.Items.Add("Pause", null, PauseClicked);
+			contextMenu.Items.Add("Open config", null, OpenConfigClicked);
+			contextMenu.Items.Add("Exit", null, ExitClicked);
+			_TrayIcon.ContextMenuStrip = contextMenu;
+
 			//Logger.Clear();
 
 			Config.Initialize();
@@ -18,6 +25,21 @@ namespace TheProject
 			IconState = new IconState();
 			Visible = false;
 			TopMost = true;
+		}
+
+		private void OpenConfigClicked(object sender, EventArgs e)
+		{
+			Process.Start(Config.FILE_NAME);
+		}
+
+		private void ExitClicked(object sender, EventArgs e)
+		{
+			Close();
+		}
+
+		private void PauseClicked(object sender, EventArgs e)
+		{
+			TogglePaused();
 		}
 
 		private DateTime _LastMiniBreak = DateTime.Now;
@@ -171,9 +193,7 @@ namespace TheProject
 
 		private void _TrayIcon_MouseClick(object sender, MouseEventArgs e)
 		{
-			if (e.Button == MouseButtons.Right)
-				Close();
-			else if (e.Button == MouseButtons.Left)
+			if (e.Button == MouseButtons.Left)
 				TogglePaused();
 		}
 

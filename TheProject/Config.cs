@@ -11,7 +11,8 @@ namespace TheProject
 
 		}
 
-		private const string FILE_NAME = "config.json";
+		public const string FILE_NAME = "config.json";
+
 		static FileSystemWatcher fileSystemWatcher;
 
 		public static void Initialize()
