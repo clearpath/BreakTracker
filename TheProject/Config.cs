@@ -6,6 +6,16 @@ namespace TheProject
 {
 	class Config
 	{
+		static FileSystemWatcher fileSystemWatcher;
+
+		static Config()
+		{
+			var directoryName = Path.GetDirectoryName(Application.ExecutablePath);
+			fileSystemWatcher = new FileSystemWatcher(directoryName, "*.json");
+			fileSystemWatcher.EnableRaisingEvents = true;
+			fileSystemWatcher.Changed += fileSystemWatcher_Changed;
+		}
+
 		private Config()
 		{
 
@@ -13,33 +23,31 @@ namespace TheProject
 
 		public const string FILE_NAME = "config.json";
 
-		static FileSystemWatcher fileSystemWatcher;
-
-		public static void Initialize()
-		{
-			var directoryName = Path.GetDirectoryName(Application.ExecutablePath);
-			fileSystemWatcher = new FileSystemWatcher(directoryName, "*.json");
-			fileSystemWatcher.EnableRaisingEvents = true;
-			fileSystemWatcher.Changed += fileSystemWatcher_Changed;
-			ReadSettings();
-		}
-
 		static void fileSystemWatcher_Changed(object sender, FileSystemEventArgs e)
 		{
 			if (e.Name == FILE_NAME)
 			{
-				ReadSettings();
+				instance = null;
 			}
 		}
 
-		private static void ReadSettings()
+		private static Config instance;
+
+		public static Config Instance
 		{
-			var s = File.ReadAllText(FILE_NAME);
-			Instance = JsonConvert.DeserializeObject<Config>(s);
+			get
+			{
+				if (instance == null)
+				{
+					var s = File.ReadAllText(FILE_NAME);
+					instance = JsonConvert.DeserializeObject<Config>(s);
+				}
+
+				return instance;
+			}
 		}
 
-		public static Config Instance { get; private set; }
-
+		public bool NotifyOnBreak = false;
 		public int MiniBreakIntervalInMinutes = 5;
 		public int MiniBreakLengthInSeconds = 30;
 		public int BigBreakIntervalInMinutes = 45;

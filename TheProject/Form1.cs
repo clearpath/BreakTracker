@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
@@ -12,34 +11,14 @@ namespace TheProject
 		{
 			InitializeComponent();
 
-			var contextMenu = new ContextMenuStrip();
-			contextMenu.Items.Add("Pause", null, PauseClicked);
-			contextMenu.Items.Add("Open config", null, OpenConfigClicked);
-			contextMenu.Items.Add("Exit", null, ExitClicked);
-			_TrayIcon.ContextMenuStrip = contextMenu;
-
+			InitContextMenu();
+			
 			//Logger.Clear();
 
-			Config.Initialize();
-
+			
 			IconState = new IconState();
 			Visible = false;
 			TopMost = true;
-		}
-
-		private void OpenConfigClicked(object sender, EventArgs e)
-		{
-			Process.Start(Config.FILE_NAME);
-		}
-
-		private void ExitClicked(object sender, EventArgs e)
-		{
-			Close();
-		}
-
-		private void PauseClicked(object sender, EventArgs e)
-		{
-			TogglePaused();
 		}
 
 		private DateTime _LastMiniBreak = DateTime.Now;
@@ -54,18 +33,18 @@ namespace TheProject
 				Visible = false;
 
 			DateTime now = DateTime.Now;
-			TimeSpan lastInput = Win32.GetLastInputTime();
+			TimeSpan timeSpanSinceLastInput = Win32.GetTimeSpanSinceLastInput();
 
-			if (lastInput.TotalSeconds > Config.Instance.BigBreakLengthInSeconds)
+			if (timeSpanSinceLastInput.TotalSeconds > Config.Instance.BigBreakLengthInSeconds)
 			{
 				_LastMiniBreak = now;
-				_LastBigBreak = _LastMiniBreak;
+				_LastBigBreak = now;
 				IconState = new IconState();
 
 				return;
 			}
 
-			if (lastInput.TotalSeconds > Config.Instance.MiniBreakLengthInSeconds)
+			if (timeSpanSinceLastInput.TotalSeconds > Config.Instance.MiniBreakLengthInSeconds)
 			{
 				_LastMiniBreak = now;
 				IconState = new IconState { BigBreakProgress = IconState.BigBreakProgress };
@@ -87,7 +66,7 @@ namespace TheProject
 
 			if (!wasVisible &&
 				miniBreakElapsedSeconds > Config.Instance.MiniBreakIntervalInMinutes * 60 &&
-				lastInput.TotalSeconds < 2)
+				timeSpanSinceLastInput.TotalSeconds < 2)
 				Notify();
 		}
 
@@ -179,6 +158,9 @@ namespace TheProject
 
 		private void Notify()
 		{
+			if (!Config.Instance.NotifyOnBreak)
+				return;
+
 			if (_Paused)
 				return;
 
@@ -210,6 +192,30 @@ namespace TheProject
 			base.OnShown(e);
 
 			Hide();
+		}
+
+		private void InitContextMenu()
+		{
+			var contextMenu = new ContextMenuStrip();
+			contextMenu.Items.Add("Pause", null, PauseClicked);
+			contextMenu.Items.Add("Open config", null, OpenConfigClicked);
+			contextMenu.Items.Add("Exit", null, ExitClicked);
+			_TrayIcon.ContextMenuStrip = contextMenu;
+		}
+
+		private void OpenConfigClicked(object sender, EventArgs e)
+		{
+			Process.Start(Config.FILE_NAME);
+		}
+
+		private void ExitClicked(object sender, EventArgs e)
+		{
+			Close();
+		}
+
+		private void PauseClicked(object sender, EventArgs e)
+		{
+			TogglePaused();
 		}
 	}
 }

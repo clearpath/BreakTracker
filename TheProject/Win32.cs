@@ -20,14 +20,12 @@ namespace TheProject
         [DllImport("user32.dll")]
         private static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
 
-        public static TimeSpan GetLastInputTime()
+        public static TimeSpan GetTimeSpanSinceLastInput()
         {
             LASTINPUTINFO lastInputInfo = new LASTINPUTINFO();
             lastInputInfo.cbSize = Marshal.SizeOf(lastInputInfo);
             lastInputInfo.dwTime = 0;
-
-            int envTicks = Environment.TickCount;
-
+			
             if (GetLastInputInfo(ref lastInputInfo))
             {
                 long lastInputTick = lastInputInfo.dwTime;
