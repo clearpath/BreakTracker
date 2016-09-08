@@ -93,7 +93,7 @@ namespace TheProject
 					{
 						Color color = Color.Transparent;
 						if (ICON_DIMENSIONS - y - 1 < _IconState.MiniBreakProgress)
-							color = Color.Red;
+							color = Color.Tomato;
 
 						int x = ICON_DIMENSIONS * 1 / 3;
 						bitmap.SetPixel(x, y, color);
@@ -102,7 +102,7 @@ namespace TheProject
 
 						color = Color.Transparent;
 						if (ICON_DIMENSIONS - y - 1 < _IconState.BigBreakProgress)
-							color = Color.Blue;
+							color = Color.LightSkyBlue;
 
 						x = ICON_DIMENSIONS * 2 / 3;
 						bitmap.SetPixel(x, y, color);
