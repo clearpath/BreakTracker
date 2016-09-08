@@ -32,10 +32,12 @@ namespace TheProject
 			if (Visible)
 				Visible = false;
 
+			var config = Config.Instance;
+
 			DateTime now = DateTime.Now;
 			TimeSpan timeSpanSinceLastInput = Win32.GetTimeSpanSinceLastInput();
-
-			if (timeSpanSinceLastInput.TotalSeconds > Config.Instance.BigBreakLengthInSeconds)
+			
+			if (timeSpanSinceLastInput.TotalSeconds > config.BigBreakLengthInSeconds)
 			{
 				_LastMiniBreak = now;
 				_LastBigBreak = now;
@@ -44,7 +46,7 @@ namespace TheProject
 				return;
 			}
 
-			if (timeSpanSinceLastInput.TotalSeconds > Config.Instance.MiniBreakLengthInSeconds)
+			if (timeSpanSinceLastInput.TotalSeconds > config.MiniBreakLengthInSeconds)
 			{
 				_LastMiniBreak = now;
 				IconState = new IconState { BigBreakProgress = IconState.BigBreakProgress };
@@ -59,13 +61,13 @@ namespace TheProject
 
 			IconState = new IconState
 			{
-				MiniBreakProgress = (int)(miniBreakElapsedSeconds / ((double)Config.Instance.MiniBreakIntervalInMinutes * 60 / ICON_DIMENSIONS)),
-				BigBreakProgress = (int)(bigBreakElapsedSeconds / ((double)Config.Instance.BigBreakIntervalInMinutes * 60 / ICON_DIMENSIONS)),
+				MiniBreakProgress = (int)(miniBreakElapsedSeconds / ((double)config.MiniBreakIntervalInMinutes * 60 / ICON_DIMENSIONS)),
+				BigBreakProgress = (int)(bigBreakElapsedSeconds / ((double)config.BigBreakIntervalInMinutes * 60 / ICON_DIMENSIONS)),
 				Paused = _Paused
 			};
 
 			if (!wasVisible &&
-				miniBreakElapsedSeconds > Config.Instance.MiniBreakIntervalInMinutes * 60 &&
+				miniBreakElapsedSeconds > config.MiniBreakIntervalInMinutes * 60 &&
 				timeSpanSinceLastInput.TotalSeconds < 2)
 				Notify();
 		}
@@ -93,7 +95,7 @@ namespace TheProject
 						if (ICON_DIMENSIONS - y - 1 < _IconState.MiniBreakProgress)
 							color = Color.Red;
 
-						int x = ICON_DIMENSIONS / 3;
+						int x = ICON_DIMENSIONS * 1 / 3;
 						bitmap.SetPixel(x, y, color);
 						if (y == 0)
 							bitmap.SetPixel(x + 1, y, color);

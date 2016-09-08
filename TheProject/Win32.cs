@@ -28,8 +28,8 @@ namespace TheProject
 			
             if (GetLastInputInfo(ref lastInputInfo))
             {
-                long lastInputTick = lastInputInfo.dwTime;
-                long milliseconds = Environment.TickCount - lastInputTick;
+                int lastInputTick = (int)lastInputInfo.dwTime; // can overflow
+                int milliseconds = Environment.TickCount - lastInputTick;
 
                 int seconds = (int)(milliseconds / 1000);
                 TimeSpan result = new TimeSpan(0, 0, seconds);
