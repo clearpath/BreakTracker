@@ -207,7 +207,12 @@ namespace TheProject
 
 		private void OpenConfigClicked(object sender, EventArgs e)
 		{
-			Process.Start(Config.FILE_NAME);
+            var processStartInfo = new ProcessStartInfo(Config.FILE_NAME)
+            {
+                UseShellExecute = true
+            };
+
+            Process.Start(processStartInfo);	
 		}
 
 		private void ExitClicked(object sender, EventArgs e)
